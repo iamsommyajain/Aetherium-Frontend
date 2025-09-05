@@ -20,7 +20,7 @@ const RealTimeMarket = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const apiBase = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
+  const apiBase = import.meta.env.VITE_API_URL || process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
 
   // 🔗 Fetch data from backend
   useEffect(() => {
