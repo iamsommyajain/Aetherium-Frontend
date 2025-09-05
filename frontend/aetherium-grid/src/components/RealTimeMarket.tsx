@@ -20,11 +20,13 @@ const RealTimeMarket = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE || "http://localhost:5000";
+
   // 🔗 Fetch data from backend
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await axios.get("http://localhost:5000/all"); // backend endpoint
+        const res = await axios.get(`${apiBase}/all`); // backend endpoint
         setMarketData(res.data);
       } catch (err: any) {
         setError("Failed to load data");
