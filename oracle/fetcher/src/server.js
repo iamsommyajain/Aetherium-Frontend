@@ -1,4 +1,3 @@
-// src/server.js
 import express from "express";
 import cors from "cors";
 import { getLatest, getAll } from "./fetcher.js";
@@ -6,22 +5,31 @@ import { getLatest, getAll } from "./fetcher.js";
 export function createServer({ apiKey }) {
   const app = express();
 
-  // ✅ Allow frontend based on environment
-  const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:8080";
+  // Allow multiple origins (local + Vercel)
+  const allowedOrigins = [
+    process.env.FRONTEND_URL || "http://localhost:8080",
+    "http://localhost:5173", // in case you're using Vite locally
+  ];
 
   app.use(
     cors({
-      origin: allowedOrigin,
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
+      },
       methods: ["GET"],
     })
   );
 
-  // Health check route
+  // Health check
   app.get("/health", (req, res) => {
     res.json({ status: "ok" });
   });
 
-  // Latest data route
+  // Latest data
   app.get("/latest", (req, res) => {
     const data = getLatest();
     if (!data) {
@@ -30,7 +38,7 @@ export function createServer({ apiKey }) {
     res.json(data);
   });
 
-  // All data route
+  // All data
   app.get("/all", async (req, res) => {
     try {
       const data = await getAll();
